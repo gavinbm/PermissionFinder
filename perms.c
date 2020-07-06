@@ -7,7 +7,6 @@ int main(){
 	char file[10];
 	char com[30] = "ls -l ";
 	
-
 	printf("Enter a file name:\n");
 	scanf("%s", file);
 	strcat(com, file);
