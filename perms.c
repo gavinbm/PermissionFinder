@@ -1,41 +1,49 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <string.h>
 
-int main(){
-	int option;
-	char file[10];
-	char com[30] = "ls -l ";
-	
-	printf("Enter a file name:\n");
-	scanf("%s", file);
-	strcat(com, file);
+int main(int argc, char **argv) {
+    struct stat fileStat;
 
-	printf("= = = Which set of permissions would you like to see? = = =\n");
-	printf("1) File Type\n2) File Owner\n3) Group owner\n4) Other users\n5) All the above\n");
-	scanf("%d", &option);
+    if(stat(argv[1], &fileStat) < 0) {
+        printf("invalid file argument\n");
+        return 2;
+    }
 
-	switch(option) {
-		case 1:
-			strcat(com, " | cut -c 1");
-			break;
-		case 2:
-			strcat(com, " | cut -c 2-4");
-			break;
-		case 3:
-			strcat(com, " | cut -c 5-7");
-			break;
-		case 4:
-			strcat(com, " | cut -c 8-10");
-			break;
-		case 5:
-			strcat(com, " | cut -c 1-10");
-			break;
-		default:
-			strcat(com, " | cut -c 1-10");
-			break;
-	}
+    if(S_ISREG(fileStat.st_mode))
+        printf("Regular file\n");
+    else
+        printf("Not a regular file\n");
 
-	system(com);
-	return 0;
+    printf("Owner:  ");
+    if(fileStat.st_mode & S_IRUSR)
+        printf("read ");
+    if(fileStat.st_mode & S_IWUSR)
+        printf("write ");
+    if(fileStat.st_mode & S_IXUSR)
+        printf("execute");
+    printf("\n");
+
+    printf("Group:  ");
+    if(fileStat.st_mode & S_IRGRP)
+        printf("read ");
+    if(fileStat.st_mode & S_IWGRP)
+        printf("write ");
+    if(fileStat.st_mode & S_IXGRP)
+        printf("execute");
+    printf("\n");
+
+    printf("Other:  ");
+    if(fileStat.st_mode & S_IROTH)
+        printf("read ");
+    if(fileStat.st_mode & S_IWOTH)
+        printf("write ");
+    if(fileStat.st_mode & S_IXOTH)
+        printf("execute");
+    printf("\n");
+
+    return 0;
+
 }
